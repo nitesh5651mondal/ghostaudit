@@ -27,11 +27,11 @@ However, **strict corporate data governance and legal compliance forbid feeding 
 
 ```mermaid
 flowchart TD
-    Raw[Raw Crash Logs + Suspect Code] --> Sanitizer[🔒 Pre-Inference Zero-Trust Sanitizer]
-    Sanitizer -->|Sanitized Telemetry| Argus[👁️ Agent Argus: Log & Crash Detective]
-    Argus -->|Culprit & Anomaly Fingerprint| Cerberus[🛡️ Agent Cerberus: Security Gatekeeper]
-    Cerberus -->|CWE Classification & CVSS Vector| Prometheus[⚡ Agent Prometheus: Patch Synthesizer]
-    Prometheus --> Output[Unified Git Diff Patch + CISO Post-Mortem Report]
+    Raw["Raw Crash Logs + Suspect Code"] --> Sanitizer["Pre-Inference Zero-Trust Sanitizer"]
+    Sanitizer -->|"Sanitized Telemetry"| Argus["Agent 1: Argus (Log Detective)"]
+    Argus -->|"Culprit & Anomaly Fingerprint"| Cerberus["Agent 2: Cerberus (Security Gatekeeper)"]
+    Cerberus -->|"CWE Classification & CVSS"| Prometheus["Agent 3: Prometheus (Patch Synthesizer)"]
+    Prometheus --> Output["Unified Git Diff Patch + CISO Report"]
 ```
 
 ---

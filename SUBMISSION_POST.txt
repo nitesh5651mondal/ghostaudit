@@ -1,0 +1,108 @@
+# GhostAudit: What Happens When Production Breaks at 3 AM and Cloud AI is Banned?
+
+_This is a submission for the [MLH x DEV Writing Challenge](https://dev.to/mlh-hackathon)_
+
+---
+
+## What I Built
+
+### The 3:14 AM Nightmare
+If you’ve ever been on-call, you know the sound of PagerDuty going off in the dead of night. 
+
+A few months back, I watched an incident unfold where an auth microservice started throwing bizarre database syntax errors. Sessions were dropping, logs were flying by at thousands of lines per second, and everyone was exhausted. 
+
+Naturally, the immediate reflex today is: *"Just paste the stack trace into ChatGPT or Claude and ask it what's broken."*
+
+Except... you can’t. 
+
+Our security lead would have had my head. Company compliance strictly forbids pasting internal code, client tokens, and raw crash dumps into third-party cloud LLMs. One accidental paste of a sensitive customer payload or an internal private IP, and you've turned a standard production glitch into a full-blown data compliance disaster.
+
+So you're stuck doing it the old-fashioned way: squinting at terminal windows at 3 AM, grepping through gigabytes of logs, and manually trying to reproduce an exploit while your adrenaline is spiking.
+
+I kept thinking: **Why can't we have cutting-edge cognitive AI that stays strictly on my machine—100% offline, zero data leakage, and zero cloud bills?**
+
+That’s why I built **GhostAudit**.
+
+---
+
+### Meet GhostAudit: The Air-Gapped Incident Copilot
+**GhostAudit** is an autonomous cybersecurity incident response copilot powered entirely by **Google Gemma running locally**. 
+
+It operates under a strict **Zero-Egress** rule: not a single byte of your proprietary code or server telemetry leaves your machine. You can pull your Ethernet cable out of the wall, turn off your Wi-Fi, and GhostAudit will still diagnose the breach, map the vulnerability, and generate a working git patch in seconds.
+
+Instead of throwing a massive, vague prompt at a model, I split the cognitive workload across three specialized personas inspired by mythology:
+
+```
+[ Raw Incident Logs + Suspect Source Code ]
+                   │
+                   ▼
+  [ 🔒 Pre-Inference Secret & PII Scrubbing ]
+                   │
+                   ▼
+  [ 👁️ Argus: Telemetry & Log Detective ]
+                   │
+                   ▼
+  [ 🛡️ Cerberus: Code & Security Auditor ]
+                   │
+                   ▼
+  [ ⚡ Prometheus: The Healer & Patch Synthesizer ]
+                   │
+                   ▼
+ [ Production-Ready Git Diff + CISO Post-Mortem ]
+```
+
+### The Three Agents in Action:
+1. **👁️ Argus (The All-Seeing Log Detective)**:  
+   Raw logs are noisy and chaotic. Argus cuts through the noise to find the needle in the haystack. It flags the exact microsecond the crash happened, extracts rogue payloads (like an unescaped `' OR '1'='1`), and points directly to the culprit file and line number.
+2. **🛡️ Cerberus (The Code Gatekeeper)**:  
+   Once Argus finds the crime scene, Cerberus steps in. It reviews the surrounding code, identifies the formal **MITRE CWE identifier** (like CWE-89 SQL Injection or CWE-502 Insecure Deserialization), computes an objective **CVSS v3.1 severity rating**, and checks if any internal API keys were accidentally exposed.
+3. **⚡ Prometheus (The Healer & Patch Synthesizer)**:  
+   Detecting a bug is only half the battle; fixing it without introducing regressions is the hard part. Prometheus synthesizes a clean, standard unified git patch (`--- a/` and `+++ b/`) that swaps out dangerous string interpolations for safe parameterized queries, accompanied by architectural hardening tips.
+
+Before any log touches even the local Gemma prompt, GhostAudit runs a **Pre-Inference Sanitizer** that automatically scrubs cloud credentials, JWT tokens, and private internal IPs. Defense-in-depth, always.
+
+---
+
+## Demo
+
+I wanted GhostAudit to feel like an authentic cyber-defense command center rather than another minimalist text chatbot. 
+
+- **Live Deployed App (Vercel):** https://ghostaudit-alpha.vercel.app
+- **GitHub Repository:** https://github.com/nitesh5651mondal/ghostaudit
+
+### What You Can Explore in the App:
+* **The Radial Risk Proximity Radar:** A custom animated radar map with counter-rotating orbits and pulsing threat clusters that dynamically adapts its asset counts and CVSS scores as incidents are triaged.
+* **"Execute Tri-Agent Triage in One Go":** Watch Argus, Cerberus, and Prometheus run in a single fluid sequence, handing context from one to the next in real time.
+* **Four Dedicated Ops Views:**
+  * **Exposure Analysis:** Test preset real-world breach scenarios or paste your own custom production logs and scripts to test the pipeline on your own code.
+  * **Incident Dashboard:** Real-time telemetry health metrics, cluster statuses, and historical incident post-mortems with one-click inspection.
+  * **Attack Path Graph:** Visualizes the 4-hop adversary kill-chain from untrusted client ingress all the way to database exfiltration.
+  * **Telemetry Feeds:** A live streaming terminal log feed with instant search, severity filters, and one-click piping to the Gemma triage engine.
+* **CISO Post-Mortem Export:** Generates an executive markdown incident report and a copyable `.patch` diff file you can apply directly with `git apply`.
+
+---
+
+## Partner Technologies
+
+### Google Gemma (Open-Weight Model Family)
+Gemma wasn't just a component in this project—**it made the entire concept possible.**
+
+#### How I Implemented It:
+I ran **Gemma 2 (2B and 9B)** locally via Ollama paired with a Python orchestration layer. Because local setups vary widely among developers and judges, I also built an internal deterministic fallback engine so anyone without a dedicated GPU can clone the repository or open the Vercel link and experience the full multi-agent triage flow without running into driver or download roadblocks.
+
+#### What Surprised Me About Gemma:
+A common misconception in the AI space right now is that you need a gargantuan 70-billion-parameter cloud model to do meaningful code reasoning. 
+
+Working with Gemma completely shattered that assumption for me. The 2B and 9B variants running on everyday consumer hardware showed remarkable syntactic precision. Gemma was able to pick apart messy stack traces, distinguish between raw SQL string interpolation and parameterized queries, and output syntactically valid unified git diffs without hallucinating. Doing all of that on edge hardware with zero API costs, zero internet latency, and total data sovereignty was genuinely thrilling to see.
+
+---
+
+## Hackathon Experience
+
+Building GhostAudit pushed me to bridge two disciplines I love: software engineering and security operations. 
+
+Hackathons often encourage building quick wrappers around cloud APIs, but having to design for **air-gapped environments** forced me to think deeply about architectural constraints. How do you pass structured state between local agents? How do you keep the UI responsive while models execute locally? How do you ensure the system is genuinely useful during a real incident?
+
+Designing the interactive radar, writing the agent orchestrator, and seeing Gemma catch an exploit and write a surgical fix right on my laptop was one of the most rewarding engineering projects I've worked on.
+
+Open-source AI belongs in developers' hands. With models like Google Gemma, we finally don't have to choose between cutting-edge intelligence and keeping our data safe.
